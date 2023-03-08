@@ -6,7 +6,7 @@ import $$observable from "./utils/symbol-observable"
  * @param {Object | Function} preloadedState 默认状态
  * @param {Function} enhancer 插件
  */
-const createStore = function (reducer, preloadedState, enhancer) {
+export const createStore = function (reducer, preloadedState, enhancer) {
   if (typeof reducer !== 'function') return new Error('reducer 必须为一个函数')
   if (
     (typeof preloadedState === 'function' && enhancer === 'function') ||
@@ -145,5 +145,3 @@ const createStore = function (reducer, preloadedState, enhancer) {
   }
   return store
 }
-
-export default createStore
