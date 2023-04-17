@@ -1,7 +1,7 @@
 import { effectScope, markRaw, nextTick, reactive, watch, isReactive, toRaw, isRef } from "vue"
 import { addSubscription, triggerSubscriptions } from "./subscriptions"
 import { assign, isComputed, isFun, mergeRectiveObjects } from "./utils"
-import { setActivePinia } from "pinia"
+import { setActivePinia } from "./rootStore"
 
 export default function craeteSetupStore($id, setup, options, pinia, isOptionsStore) {
   let scope

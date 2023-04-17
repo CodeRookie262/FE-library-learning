@@ -1,7 +1,7 @@
 import { computed, markRaw, toRefs } from "vue"
 import { assign, isFun } from "./utils"
-import { setActivePinia } from "pinia"
 import craeteSetupStore from "./craeteSetupStore"
+import { setActivePinia } from "./rootStore"
 
 export const createOptionsStore = ($id, options, pinia) => {
   const { state, actions, getters } = options
