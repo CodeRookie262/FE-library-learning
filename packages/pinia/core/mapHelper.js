@@ -1,8 +1,8 @@
-import { isStr } from "./utils"
+import { isFun, isStr } from "./utils"
 
 let mapStoreSuffix = 'Store'
 // 设置拼接后缀
-const setMapStoreSuffix = suffix => {
+export const setMapStoreSuffix = suffix => {
   if (isStr(suffix)) mapStoreSuffix = suffix
 }
 
@@ -95,7 +95,9 @@ export const mapWritableState = function (useStore, keyMapper) {
     return Object.entries(keyMapper).reduce((reduce, [rename, name]) => {
       reduce[rename] = {
         get() {
-          return useStore(this.$pinia)[name]
+          let store = useStore(this.$pinia)
+          if (isFun(name)) return name(store)
+          return useStore(store)[name]
         },
         set(val) {
           return useStore(this.$pinia)[name] = val

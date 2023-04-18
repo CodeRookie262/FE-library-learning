@@ -30,19 +30,22 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
 
   let activeListener
 
+  // 批量更新状态
   function $patch(partialStateOrMutator) {
     let subscribeMutation
     isListening = isSyncListening = false
 
     if (isFun(partialStateOrMutator)) {
+      // 将当前状态传入自定义的函数中
       partialStateOrMutator(pinia.state.value[$id])
     } else {
-      // 合并对象
+      // 深度合并对象
       mergeRectiveObjects(pinia.state.value[$id], partialStateOrMutator)
     }
 
     const MyListenerId = activeListener = Symbol()
     nextTick().then(() => {
+
       if (MyListenerId === activeListener) {
         isListening = true
       }
@@ -65,7 +68,7 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
     return addSubscription(actionSubscriptions, ...args)
   }
 
-  // 停止 store 的相关作用域，并从 store 注册表中删除它。
+  // 注销 store
   function $dispose() {
     scope.stop()
     subscribes = []
@@ -79,7 +82,7 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
       setActivePinia(pinia)
       const afterCallbackList = []
       const onErrorCallbackList = []
-
+      // 注册切片函数
       function after(fn) {
         afterCallbackList.push(fn)
       }
@@ -135,12 +138,11 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
             storeId: $id,
             type: MutationType.direct
           },
-            state,
-            {
-              ...$subscribeOptions,
-              ...options
-            })
+            state)
         }
+      }, {
+        ...$subscribeOptions,
+        ...options
       })
     })
 
@@ -165,10 +167,12 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
     scope = effectScope()
     return scope.run(() => setup())
   })
+  // 扁平化 state，getters，actions
+  // debugger
   for (const key in setupStore) {
     const prop = setupStore[key]
     // 判断是否是响应式数据
-    if (isRef(prop) && isComputed(prop) || isReactive(prop)) {
+    if (isRef(prop) && !isComputed(prop) || isReactive(prop)) {
       // createOptionsStore 中的数据已经经过响应式处理了，这里可以跳过
       if (!isOptionsStore) {
         if (initState && isRef(prop)) {
@@ -184,6 +188,7 @@ export default function craeteSetupStore($id, setup, options, pinia, isOptionsSt
       // 对 action 进行包装
       const activeValue = wrapAction(key, prop)
       setupStore[key] = activeValue
+      console.log(isComputed(prop), prop, key)
     }
   }
 
